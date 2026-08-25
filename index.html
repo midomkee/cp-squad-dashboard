@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CP Squad Dashboard 🚀</title>
     
-    <!-- مكتبة Chart.js للرسم البياني -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- مكتبات Firebase الأساسية -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -23,7 +20,6 @@
         .live-status span { display: inline-block; width: 8px; height: 8px; background-color: #39d353; border-radius: 50%; margin-right: 5px; animation: blink 1s infinite; }
         @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0;} 100% {opacity: 1;} }
         
-        /* Control Panel */
         .control-panel {
             background-color: #161b22; padding: 20px; border-radius: 10px;
             border: 1px solid #30363d; margin-bottom: 30px; display: flex;
@@ -37,64 +33,33 @@
         }
         .input-group input[type="date"] { width: 130px; }
         
-        .btn-save {
-            padding: 10px 20px; background-color: #238636; color: white;
-            border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
-        }
+        .btn-save { padding: 10px 20px; background-color: #238636; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
         .btn-save:hover { background-color: #2ea043; }
         
-        .btn-settings {
-            padding: 10px 15px; background-color: #21262d; color: #c9d1d9;
-            border: 1px solid #30363d; border-radius: 5px; cursor: pointer;
-            font-weight: bold; margin-left: auto;
-        }
+        .btn-settings { padding: 10px 15px; background-color: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: auto; }
         .btn-settings:hover { background-color: #30363d; }
 
-        /* Leaderboard Chart */
-        .chart-container {
-            background-color: #161b22; padding: 20px; border-radius: 10px;
-            border: 1px solid #30363d; margin-bottom: 30px;
-            height: 300px; display: flex; justify-content: center;
-        }
-
-        /* Team Cards */
-        .team-container { display: flex; flex-direction: column; gap: 20px; }
-        .user-card {
-            background-color: #161b22; padding: 20px;
-            border-radius: 10px; border: 1px solid #30363d;
-            position: relative; overflow: hidden;
-        }
+        .chart-container { background-color: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d; margin-bottom: 30px; height: 300px; display: flex; justify-content: center; }
         
-        /* 🔥 Fire Badge Animation */
-        .fire-badge {
-            font-size: 0.55em; background: linear-gradient(90deg, #ff4b1f, #ff9068);
-            color: #fff; padding: 4px 10px; border-radius: 20px; margin-left: 15px;
-            vertical-align: middle; font-weight: 900; letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(255, 75, 31, 0.5);
-            animation: pulse-fire 1.5s infinite;
-        }
-        @keyframes pulse-fire {
-            0% { box-shadow: 0 0 0 0 rgba(255, 75, 31, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 75, 31, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 75, 31, 0); }
-        }
+        .team-container { display: flex; flex-direction: column; gap: 20px; }
+        .user-card { background-color: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d; position: relative; overflow: hidden; }
+        
+        .fire-badge { font-size: 0.55em; background: linear-gradient(90deg, #ff4b1f, #ff9068); color: #fff; padding: 4px 10px; border-radius: 20px; margin-left: 15px; vertical-align: middle; font-weight: 900; letter-spacing: 1px; box-shadow: 0 0 10px rgba(255, 75, 31, 0.5); animation: pulse-fire 1.5s infinite; }
+        @keyframes pulse-fire { 0% { box-shadow: 0 0 0 0 rgba(255, 75, 31, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 75, 31, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 75, 31, 0); } }
 
-        .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .user-name { font-size: 1.5em; font-weight: bold; display: flex; align-items: center; }
         .stats { font-size: 0.9em; color: #8b949e; }
         .stats span { color: #58a6ff; font-weight: bold; }
         
-        /* Heatmap Graph */
-        .graph {
-            display: grid; grid-template-rows: repeat(7, 24px); grid-auto-flow: column;
-            gap: 4px; overflow-x: auto; padding-bottom: 10px;
-        }
-        .day-box {
-            width: 24px; height: 24px; border-radius: 4px;
-            background-color: #161b22; border: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer; display: flex; justify-content: center; align-items: center;
-            font-size: 0.75em; font-weight: bold; color: #ffffff;
-        }
+        /* 📊 تنسيق شريط التقدم الجديد */
+        .progress-wrapper { margin-bottom: 15px; }
+        .progress-text { display: flex; justify-content: space-between; font-size: 0.85em; color: #8b949e; margin-bottom: 5px; font-weight: bold; }
+        .progress-bar-bg { background-color: #30363d; border-radius: 5px; height: 8px; width: 100%; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background-color: #39d353; transition: width 0.8s ease-in-out; }
+
+        .graph { display: grid; grid-template-rows: repeat(7, 24px); grid-auto-flow: column; gap: 4px; overflow-x: auto; padding-bottom: 10px; }
+        .day-box { width: 24px; height: 24px; border-radius: 4px; background-color: #161b22; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 0.75em; font-weight: bold; color: #ffffff; }
         .day-box:hover { border-color: #fff; }
         
         .level-0 { background-color: #161b22; } 
@@ -103,30 +68,17 @@
         .level-3 { background-color: #26a641; } 
         .level-4 { background-color: #39d353; color: #000; } 
 
-        /* Modal */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100;
-        }
-        .modal-content {
-            background-color: #161b22; padding: 30px; border-radius: 10px;
-            border: 1px solid #30363d; width: 450px; max-height: 90vh; overflow-y: auto;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background-color: #161b22; padding: 30px; border-radius: 10px; border: 1px solid #30363d; width: 450px; max-height: 90vh; overflow-y: auto; }
         .modal-content h2 { margin-top: 0; color: #58a6ff; margin-bottom: 10px; }
         .modal-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #30363d; }
         .modal-section h3 { margin-top: 0; font-size: 1.1em; color: #c9d1d9; }
         .settings-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
         .settings-row label { font-weight: bold; width: 120px; }
-        .settings-row input {
-            padding: 5px; border-radius: 5px; border: 1px solid #30363d; 
-            background-color: #0d1117; color: white; width: 80px;
-        }
+        .settings-row input { padding: 5px; border-radius: 5px; border: 1px solid #30363d; background-color: #0d1117; color: white; width: 80px; }
         .settings-row input[type="date"] { width: 130px; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-        .btn-cancel {
-            padding: 8px 15px; background-color: transparent; color: #c9d1d9;
-            border: 1px solid #30363d; border-radius: 5px; cursor: pointer;
-        }
+        .btn-cancel { padding: 8px 15px; background-color: transparent; color: #c9d1d9; border: 1px solid #30363d; border-radius: 5px; cursor: pointer; }
         .btn-cancel:hover { background-color: #30363d; }
     </style>
 </head>
@@ -169,32 +121,14 @@
             <h2>⚙️ Dashboard Settings</h2>
             <div class="modal-section">
                 <h3>📅 Timeline Setup</h3>
-                <div class="settings-row">
-                    <label>Start Date:</label>
-                    <input type="date" id="configStartDate">
-                </div>
-                <div class="settings-row">
-                    <label>Duration (Weeks):</label>
-                    <input type="number" id="configWeeks" min="0" max="52" placeholder="0 for open">
-                </div>
+                <div class="settings-row"><label>Start Date:</label><input type="date" id="configStartDate"></div>
+                <div class="settings-row"><label>Duration (Weeks):</label><input type="number" id="configWeeks" min="0" max="52" placeholder="0 for open"></div>
             </div>
             <div class="modal-section" style="border-bottom: none;">
                 <h3>🎯 Personal Targets</h3>
-                <div class="settings-row">
-                    <label>Mohamed:</label>
-                    <div>Goal: <input type="number" id="mohamedGoal"></div>
-                    <div>Daily: <input type="number" id="mohamedDaily"></div>
-                </div>
-                <div class="settings-row">
-                    <label>Elbadry:</label>
-                    <div>Goal: <input type="number" id="elbadryGoal"></div>
-                    <div>Daily: <input type="number" id="elbadryDaily"></div>
-                </div>
-                <div class="settings-row">
-                    <label>Mostafa:</label>
-                    <div>Goal: <input type="number" id="mostafaGoal"></div>
-                    <div>Daily: <input type="number" id="mostafaDaily"></div>
-                </div>
+                <div class="settings-row"><label>Mohamed:</label><div>Goal: <input type="number" id="mohamedGoal"></div><div>Daily: <input type="number" id="mohamedDaily"></div></div>
+                <div class="settings-row"><label>Elbadry:</label><div>Goal: <input type="number" id="elbadryGoal"></div><div>Daily: <input type="number" id="elbadryDaily"></div></div>
+                <div class="settings-row"><label>Mostafa:</label><div>Goal: <input type="number" id="mostafaGoal"></div><div>Daily: <input type="number" id="mostafaDaily"></div></div>
             </div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeSettings()">Cancel</button>
@@ -204,15 +138,12 @@
     </div>
 
     <script>
-        // --- 1. إعدادات Firebase ---
         const firebaseConfig = {
             databaseURL: "https://cp-squad-default-rtdb.firebaseio.com"
         };
-        // تهيئة فايربيز
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // --- 2. المتغيرات الأساسية (بقيم افتراضية) ---
         let appConfig = { startDate: '2026-08-25', weeks: 7 };
         let team = [
             { id: 'mohamed', name: 'Mohamed', target: 120, dailyTarget: 8 },
@@ -223,43 +154,27 @@
         let daysArray = [];
         let myChart = null;
 
-        // --- 3. جلب البيانات لحظياً من Firebase ---
-        // الدالة دي بتشتغل أول ما تفتح الصفحة، وبتشتغل تاني أوتوماتيك أي حد يعدل حاجة
         database.ref('cp_squad_data').on('value', (snapshot) => {
             const data = snapshot.val();
-            
             if (data) {
-                // لو الداتا بيز فيها بيانات، اسحبها
                 if (data.db) db = data.db;
                 if (data.config) appConfig = data.config;
                 if (data.team) team = data.team;
             } else {
-                // لو الداتا بيز فاضية (أول مرة تفتحوها خالص)، ارفع القيم الافتراضية
-                database.ref('cp_squad_data').set({
-                    config: appConfig,
-                    team: team,
-                    db: db
-                });
+                database.ref('cp_squad_data').set({ config: appConfig, team: team, db: db });
             }
-            
-            renderDashboard(); // ارسم الشاشة بالبيانات الجديدة
+            renderDashboard(); 
         });
 
-
-        // --- باقي دوال الرسم والمنطق ---
         function generateDates() {
             daysArray = [];
             const start = new Date(appConfig.startDate);
             let end;
-
             if (!appConfig.weeks || appConfig.weeks === 0 || appConfig.weeks === "") {
-                end = new Date(); 
-                end.setDate(end.getDate() + 7); 
+                end = new Date(); end.setDate(end.getDate() + 7); 
             } else {
-                end = new Date(start);
-                end.setDate(start.getDate() + (appConfig.weeks * 7) - 1);
+                end = new Date(start); end.setDate(start.getDate() + (appConfig.weeks * 7) - 1);
             }
-            
             let current = new Date(start);
             while (current <= end) {
                 daysArray.push(current.toISOString().split('T')[0]);
@@ -269,36 +184,14 @@
 
         function updateChart(names, scores) {
             const ctx = document.getElementById('leaderboardChart').getContext('2d');
-            Chart.defaults.color = '#8b949e';
-            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
-
+            Chart.defaults.color = '#8b949e'; Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
             if (myChart) {
-                myChart.data.labels = names;
-                myChart.data.datasets[0].data = scores;
-                myChart.update();
+                myChart.data.labels = names; myChart.data.datasets[0].data = scores; myChart.update();
             } else {
                 myChart = new Chart(ctx, {
                     type: 'bar',
-                    data: {
-                        labels: names,
-                        datasets: [{
-                            label: 'Total Solved',
-                            data: scores,
-                            backgroundColor: ['#238636', '#8957e5', '#2f81f7'], 
-                            borderRadius: 6, borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: '🏆 Activity Leaderboard', color: '#58a6ff', font: { size: 18 } }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
-                            x: { grid: { display: false }, ticks: { font: { size: 14, weight: 'bold' } } }
-                        }
-                    }
+                    data: { labels: names, datasets: [{ label: 'Total Solved', data: scores, backgroundColor: ['#238636', '#8957e5', '#2f81f7'], borderRadius: 6, borderWidth: 0 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: '🏆 Activity Leaderboard', color: '#58a6ff', font: { size: 18 } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false }, ticks: { font: { size: 14, weight: 'bold' } } } } }
                 });
             }
         }
@@ -306,22 +199,14 @@
         function renderDashboard() {
             generateDates();
             const todayStr = new Date().toISOString().split('T')[0];
-            
-            // ضبط تاريخ اليوم فقط لو لم يتم تحديده مسبقاً
-            if(!document.getElementById('dateInput').value) {
-                document.getElementById('dateInput').value = daysArray.includes(todayStr) ? todayStr : daysArray[0];
-            }
+            if(!document.getElementById('dateInput').value) { document.getElementById('dateInput').value = daysArray.includes(todayStr) ? todayStr : daysArray[0]; }
 
             let userTotals = {};
             let maxScore = 0;
             
             team.forEach(user => {
                 let total = 0;
-                daysArray.forEach(date => {
-                    if (db[date] && db[date][user.id]) {
-                        total += parseInt(db[date][user.id]);
-                    }
-                });
+                daysArray.forEach(date => { if (db[date] && db[date][user.id]) { total += parseInt(db[date][user.id]); } });
                 userTotals[user.id] = total;
                 if (total > maxScore) { maxScore = total; }
             });
@@ -340,25 +225,17 @@
 
                 daysArray.forEach(date => {
                     let solved = 0;
-                    if (db[date] && db[date][user.id]) {
-                        solved = parseInt(db[date][user.id]);
-                    }
+                    if (db[date] && db[date][user.id]) { solved = parseInt(db[date][user.id]); }
 
-                    let colorClass = 'level-0';
-                    let boxText = '';
-
-                    if (solved > 0 && solved < Math.ceil(user.dailyTarget * 0.4)) {
-                        colorClass = 'level-1';
-                    } else if (solved >= Math.ceil(user.dailyTarget * 0.4) && solved < Math.ceil(user.dailyTarget * 0.7)) {
-                        colorClass = 'level-2';
-                    } else if (solved >= Math.ceil(user.dailyTarget * 0.7) && solved < user.dailyTarget) {
-                        colorClass = 'level-3';
-                    } else if (solved >= user.dailyTarget) {
+                    let colorClass = 'level-0'; let boxText = '';
+                    if (solved > 0 && solved < Math.ceil(user.dailyTarget * 0.4)) { colorClass = 'level-1'; } 
+                    else if (solved >= Math.ceil(user.dailyTarget * 0.4) && solved < Math.ceil(user.dailyTarget * 0.7)) { colorClass = 'level-2'; } 
+                    else if (solved >= Math.ceil(user.dailyTarget * 0.7) && solved < user.dailyTarget) { colorClass = 'level-3'; } 
+                    else if (solved >= user.dailyTarget) {
                         colorClass = 'level-4';
                         let extra = solved - user.dailyTarget;
                         if (extra > 0) { boxText = `+${extra}`; } else { boxText = '✔'; }
                     }
-
                     graphHTML += `<div class="day-box ${colorClass}" title="${date} | Solved: ${solved}">${boxText}</div>`;
                 });
 
@@ -367,6 +244,11 @@
 
                 let remaining = user.target - totalSolved;
                 if (remaining < 0) remaining = 0;
+
+                // حساب النسبة المئوية للـ Progress Bar
+                let percentage = user.target > 0 ? ((totalSolved / user.target) * 100) : 0;
+                let displayPercentage = percentage.toFixed(1); // رقم عشري واحد
+                let barWidth = percentage > 100 ? 100 : percentage; // عشان الشريط ميخرجش برا الإطار لو عديتوا التارجت
 
                 let html = `
                 <div class="user-card">
@@ -379,6 +261,18 @@
                             Daily Target: <span>${user.dailyTarget}</span>
                         </div>
                     </div>
+                    
+                    <!-- شريط التقدم الجديد -->
+                    <div class="progress-wrapper">
+                        <div class="progress-text">
+                            <span>Progress Overview</span>
+                            <span style="color: #39d353;">${displayPercentage}%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${barWidth}%;"></div>
+                        </div>
+                    </div>
+
                     <div class="graph">${graphHTML}</div>
                 </div>`;
                 container.innerHTML += html;
@@ -387,7 +281,6 @@
             updateChart(chartNames, chartScores);
         }
 
-        // حفظ البيانات لفايربيز
         function saveData() {
             const date = document.getElementById('dateInput').value;
             const mohamedVal = document.getElementById('mohamedInput').value;
@@ -399,7 +292,6 @@
             if (elbadryVal !== '') db[date].elbadry = elbadryVal;
             if (mostafaVal !== '') db[date].mostafa = mostafaVal;
 
-            // إرسال البيانات المحدثة لفايربيز (وهي هتسمع في باقي الأجهزة لوحدها)
             database.ref('cp_squad_data/db').set(db);
             
             document.getElementById('mohamedInput').value = '';
@@ -423,7 +315,7 @@
         
         function saveSettings() {
             appConfig.startDate = document.getElementById('configStartDate').value || appConfig.startDate;
-            appConfig.weeks = parseInt(document.getElementById('configWeeks').value) || 0; // 0 للمدة المفتوحة
+            appConfig.weeks = parseInt(document.getElementById('configWeeks').value) || 0; 
             
             team[0].target = parseInt(document.getElementById('mohamedGoal').value) || team[0].target;
             team[0].dailyTarget = parseInt(document.getElementById('mohamedDaily').value) || team[0].dailyTarget;
@@ -432,7 +324,6 @@
             team[2].target = parseInt(document.getElementById('mostafaGoal').value) || team[2].target;
             team[2].dailyTarget = parseInt(document.getElementById('mostafaDaily').value) || team[2].dailyTarget;
             
-            // تحديث الإعدادات لفايربيز عشان تتحدث عند الفريق كله
             database.ref('cp_squad_data/config').set(appConfig);
             database.ref('cp_squad_data/team').set(team);
             
