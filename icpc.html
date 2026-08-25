@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CP Squad Dashboard 🚀</title>
+    
+    <!-- مكتبة Chart.js للرسم البياني -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- مكتبات Firebase الأساسية -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1117; color: #c9d1d9;
+            padding: 20px; max-width: 1050px; margin: 0 auto;
+        }
+        h1 { text-align: center; margin-bottom: 5px; color: #58a6ff; }
+        .live-status { text-align: center; color: #39d353; font-size: 0.9em; margin-bottom: 25px; font-weight: bold; }
+        .live-status span { display: inline-block; width: 8px; height: 8px; background-color: #39d353; border-radius: 50%; margin-right: 5px; animation: blink 1s infinite; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0;} 100% {opacity: 1;} }
+        
+        /* Control Panel */
+        .control-panel {
+            background-color: #161b22; padding: 20px; border-radius: 10px;
+            border: 1px solid #30363d; margin-bottom: 30px; display: flex;
+            gap: 15px; align-items: flex-end; flex-wrap: wrap;
+        }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 0.9em; font-weight: bold; }
+        .input-group input {
+            padding: 8px; border-radius: 5px; border: 1px solid #30363d;
+            background-color: #0d1117; color: white; width: 80px;
+        }
+        .input-group input[type="date"] { width: 130px; }
+        
+        .btn-save {
+            padding: 10px 20px; background-color: #238636; color: white;
+            border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+        .btn-save:hover { background-color: #2ea043; }
+        
+        .btn-settings {
+            padding: 10px 15px; background-color: #21262d; color: #c9d1d9;
+            border: 1px solid #30363d; border-radius: 5px; cursor: pointer;
+            font-weight: bold; margin-left: auto;
+        }
+        .btn-settings:hover { background-color: #30363d; }
+
+        /* Leaderboard Chart */
+        .chart-container {
+            background-color: #161b22; padding: 20px; border-radius: 10px;
+            border: 1px solid #30363d; margin-bottom: 30px;
+            height: 300px; display: flex; justify-content: center;
+        }
+
+        /* Team Cards */
+        .team-container { display: flex; flex-direction: column; gap: 20px; }
+        .user-card {
+            background-color: #161b22; padding: 20px;
+            border-radius: 10px; border: 1px solid #30363d;
+            position: relative; overflow: hidden;
+        }
+        
+        /* 🔥 Fire Badge Animation */
+        .fire-badge {
+            font-size: 0.55em; background: linear-gradient(90deg, #ff4b1f, #ff9068);
+            color: #fff; padding: 4px 10px; border-radius: 20px; margin-left: 15px;
+            vertical-align: middle; font-weight: 900; letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 75, 31, 0.5);
+            animation: pulse-fire 1.5s infinite;
+        }
+        @keyframes pulse-fire {
+            0% { box-shadow: 0 0 0 0 rgba(255, 75, 31, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 75, 31, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 75, 31, 0); }
+        }
+
+        .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .user-name { font-size: 1.5em; font-weight: bold; display: flex; align-items: center; }
+        .stats { font-size: 0.9em; color: #8b949e; }
+        .stats span { color: #58a6ff; font-weight: bold; }
+        
+        /* Heatmap Graph */
+        .graph {
+            display: grid; grid-template-rows: repeat(7, 24px); grid-auto-flow: column;
+            gap: 4px; overflow-x: auto; padding-bottom: 10px;
+        }
+        .day-box {
+            width: 24px; height: 24px; border-radius: 4px;
+            background-color: #161b22; border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer; display: flex; justify-content: center; align-items: center;
+            font-size: 0.75em; font-weight: bold; color: #ffffff;
+        }
+        .day-box:hover { border-color: #fff; }
+        
+        .level-0 { background-color: #161b22; } 
+        .level-1 { background-color: #0e4429; } 
+        .level-2 { background-color: #006d32; } 
+        .level-3 { background-color: #26a641; } 
+        .level-4 { background-color: #39d353; color: #000; } 
+
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-content {
+            background-color: #161b22; padding: 30px; border-radius: 10px;
+            border: 1px solid #30363d; width: 450px; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-content h2 { margin-top: 0; color: #58a6ff; margin-bottom: 10px; }
+        .modal-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #30363d; }
+        .modal-section h3 { margin-top: 0; font-size: 1.1em; color: #c9d1d9; }
+        .settings-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
+        .settings-row label { font-weight: bold; width: 120px; }
+        .settings-row input {
+            padding: 5px; border-radius: 5px; border: 1px solid #30363d; 
+            background-color: #0d1117; color: white; width: 80px;
+        }
+        .settings-row input[type="date"] { width: 130px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-cancel {
+            padding: 8px 15px; background-color: transparent; color: #c9d1d9;
+            border: 1px solid #30363d; border-radius: 5px; cursor: pointer;
+        }
+        .btn-cancel:hover { background-color: #30363d; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 CP Squad - Training Bootcamp</h1>
+    <div class="live-status"><span></span> Live Sync Active</div>
+
+    <div class="control-panel">
+        <div class="input-group">
+            <label>Date:</label>
+            <input type="date" id="dateInput">
+        </div>
+        <div class="input-group">
+            <label>Mohamed:</label>
+            <input type="number" id="mohamedInput" min="0" placeholder="0">
+        </div>
+        <div class="input-group">
+            <label>Elbadry:</label>
+            <input type="number" id="elbadryInput" min="0" placeholder="0">
+        </div>
+        <div class="input-group">
+            <label>Mostafa:</label>
+            <input type="number" id="mostafaInput" min="0" placeholder="0">
+        </div>
+        <button class="btn-save" onclick="saveData()">💾 Save Progress</button>
+        <button class="btn-settings" onclick="openSettings()">⚙️ Settings</button>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="leaderboardChart"></canvas>
+    </div>
+
+    <div class="team-container" id="team-container">
+        <h3 style="text-align: center; color: #8b949e;">Loading data from Firebase... ⏳</h3>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2>⚙️ Dashboard Settings</h2>
+            <div class="modal-section">
+                <h3>📅 Timeline Setup</h3>
+                <div class="settings-row">
+                    <label>Start Date:</label>
+                    <input type="date" id="configStartDate">
+                </div>
+                <div class="settings-row">
+                    <label>Duration (Weeks):</label>
+                    <input type="number" id="configWeeks" min="0" max="52" placeholder="0 for open">
+                </div>
+            </div>
+            <div class="modal-section" style="border-bottom: none;">
+                <h3>🎯 Personal Targets</h3>
+                <div class="settings-row">
+                    <label>Mohamed:</label>
+                    <div>Goal: <input type="number" id="mohamedGoal"></div>
+                    <div>Daily: <input type="number" id="mohamedDaily"></div>
+                </div>
+                <div class="settings-row">
+                    <label>Elbadry:</label>
+                    <div>Goal: <input type="number" id="elbadryGoal"></div>
+                    <div>Daily: <input type="number" id="elbadryDaily"></div>
+                </div>
+                <div class="settings-row">
+                    <label>Mostafa:</label>
+                    <div>Goal: <input type="number" id="mostafaGoal"></div>
+                    <div>Daily: <input type="number" id="mostafaDaily"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeSettings()">Cancel</button>
+                <button class="btn-save" onclick="saveSettings()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. إعدادات Firebase ---
+        const firebaseConfig = {
+            databaseURL: "https://cp-squad-default-rtdb.firebaseio.com"
+        };
+        // تهيئة فايربيز
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // --- 2. المتغيرات الأساسية (بقيم افتراضية) ---
+        let appConfig = { startDate: '2026-08-25', weeks: 7 };
+        let team = [
+            { id: 'mohamed', name: 'Mohamed', target: 120, dailyTarget: 8 },
+            { id: 'elbadry', name: 'Elbadry', target: 100, dailyTarget: 5 },
+            { id: 'mostafa', name: 'Mostafa', target: 100, dailyTarget: 5 }
+        ];
+        let db = {};
+        let daysArray = [];
+        let myChart = null;
+
+        // --- 3. جلب البيانات لحظياً من Firebase ---
+        // الدالة دي بتشتغل أول ما تفتح الصفحة، وبتشتغل تاني أوتوماتيك أي حد يعدل حاجة
+        database.ref('cp_squad_data').on('value', (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+                // لو الداتا بيز فيها بيانات، اسحبها
+                if (data.db) db = data.db;
+                if (data.config) appConfig = data.config;
+                if (data.team) team = data.team;
+            } else {
+                // لو الداتا بيز فاضية (أول مرة تفتحوها خالص)، ارفع القيم الافتراضية
+                database.ref('cp_squad_data').set({
+                    config: appConfig,
+                    team: team,
+                    db: db
+                });
+            }
+            
+            renderDashboard(); // ارسم الشاشة بالبيانات الجديدة
+        });
+
+
+        // --- باقي دوال الرسم والمنطق ---
+        function generateDates() {
+            daysArray = [];
+            const start = new Date(appConfig.startDate);
+            let end;
+
+            if (!appConfig.weeks || appConfig.weeks === 0 || appConfig.weeks === "") {
+                end = new Date(); 
+                end.setDate(end.getDate() + 7); 
+            } else {
+                end = new Date(start);
+                end.setDate(start.getDate() + (appConfig.weeks * 7) - 1);
+            }
+            
+            let current = new Date(start);
+            while (current <= end) {
+                daysArray.push(current.toISOString().split('T')[0]);
+                current.setDate(current.getDate() + 1);
+            }
+        }
+
+        function updateChart(names, scores) {
+            const ctx = document.getElementById('leaderboardChart').getContext('2d');
+            Chart.defaults.color = '#8b949e';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            if (myChart) {
+                myChart.data.labels = names;
+                myChart.data.datasets[0].data = scores;
+                myChart.update();
+            } else {
+                myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: names,
+                        datasets: [{
+                            label: 'Total Solved',
+                            data: scores,
+                            backgroundColor: ['#238636', '#8957e5', '#2f81f7'], 
+                            borderRadius: 6, borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: '🏆 Activity Leaderboard', color: '#58a6ff', font: { size: 18 } }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            x: { grid: { display: false }, ticks: { font: { size: 14, weight: 'bold' } } }
+                        }
+                    }
+                });
+            }
+        }
+
+        function renderDashboard() {
+            generateDates();
+            const todayStr = new Date().toISOString().split('T')[0];
+            
+            // ضبط تاريخ اليوم فقط لو لم يتم تحديده مسبقاً
+            if(!document.getElementById('dateInput').value) {
+                document.getElementById('dateInput').value = daysArray.includes(todayStr) ? todayStr : daysArray[0];
+            }
+
+            let userTotals = {};
+            let maxScore = 0;
+            
+            team.forEach(user => {
+                let total = 0;
+                daysArray.forEach(date => {
+                    if (db[date] && db[date][user.id]) {
+                        total += parseInt(db[date][user.id]);
+                    }
+                });
+                userTotals[user.id] = total;
+                if (total > maxScore) { maxScore = total; }
+            });
+
+            const container = document.getElementById('team-container');
+            container.innerHTML = '';
+            let chartNames = [];
+            let chartScores = [];
+
+            team.forEach(user => {
+                let totalSolved = userTotals[user.id];
+                let graphHTML = '';
+                
+                let isTopScorer = (totalSolved === maxScore && maxScore > 0);
+                let fireBadge = isTopScorer ? '<span class="fire-badge">🔥 ON FIRE</span>' : '';
+
+                daysArray.forEach(date => {
+                    let solved = 0;
+                    if (db[date] && db[date][user.id]) {
+                        solved = parseInt(db[date][user.id]);
+                    }
+
+                    let colorClass = 'level-0';
+                    let boxText = '';
+
+                    if (solved > 0 && solved < Math.ceil(user.dailyTarget * 0.4)) {
+                        colorClass = 'level-1';
+                    } else if (solved >= Math.ceil(user.dailyTarget * 0.4) && solved < Math.ceil(user.dailyTarget * 0.7)) {
+                        colorClass = 'level-2';
+                    } else if (solved >= Math.ceil(user.dailyTarget * 0.7) && solved < user.dailyTarget) {
+                        colorClass = 'level-3';
+                    } else if (solved >= user.dailyTarget) {
+                        colorClass = 'level-4';
+                        let extra = solved - user.dailyTarget;
+                        if (extra > 0) { boxText = `+${extra}`; } else { boxText = '✔'; }
+                    }
+
+                    graphHTML += `<div class="day-box ${colorClass}" title="${date} | Solved: ${solved}">${boxText}</div>`;
+                });
+
+                chartNames.push(isTopScorer ? `🔥 ${user.name}` : user.name);
+                chartScores.push(totalSolved);
+
+                let remaining = user.target - totalSolved;
+                if (remaining < 0) remaining = 0;
+
+                let html = `
+                <div class="user-card">
+                    <div class="user-header">
+                        <div class="user-name">${user.name} ${fireBadge}</div>
+                        <div class="stats">
+                            Goal: <span>${user.target}</span> | 
+                            Solved: <span>${totalSolved}</span> | 
+                            Remaining: <span>${remaining}</span> | 
+                            Daily Target: <span>${user.dailyTarget}</span>
+                        </div>
+                    </div>
+                    <div class="graph">${graphHTML}</div>
+                </div>`;
+                container.innerHTML += html;
+            });
+
+            updateChart(chartNames, chartScores);
+        }
+
+        // حفظ البيانات لفايربيز
+        function saveData() {
+            const date = document.getElementById('dateInput').value;
+            const mohamedVal = document.getElementById('mohamedInput').value;
+            const elbadryVal = document.getElementById('elbadryInput').value;
+            const mostafaVal = document.getElementById('mostafaInput').value;
+
+            if(!db[date]) db[date] = {};
+            if (mohamedVal !== '') db[date].mohamed = mohamedVal;
+            if (elbadryVal !== '') db[date].elbadry = elbadryVal;
+            if (mostafaVal !== '') db[date].mostafa = mostafaVal;
+
+            // إرسال البيانات المحدثة لفايربيز (وهي هتسمع في باقي الأجهزة لوحدها)
+            database.ref('cp_squad_data/db').set(db);
+            
+            document.getElementById('mohamedInput').value = '';
+            document.getElementById('elbadryInput').value = '';
+            document.getElementById('mostafaInput').value = '';
+        }
+
+        function openSettings() {
+            document.getElementById('configStartDate').value = appConfig.startDate;
+            document.getElementById('configWeeks').value = appConfig.weeks;
+            document.getElementById('mohamedGoal').value = team[0].target;
+            document.getElementById('mohamedDaily').value = team[0].dailyTarget;
+            document.getElementById('elbadryGoal').value = team[1].target;
+            document.getElementById('elbadryDaily').value = team[1].dailyTarget;
+            document.getElementById('mostafaGoal').value = team[2].target;
+            document.getElementById('mostafaDaily').value = team[2].dailyTarget;
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+        
+        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+        
+        function saveSettings() {
+            appConfig.startDate = document.getElementById('configStartDate').value || appConfig.startDate;
+            appConfig.weeks = parseInt(document.getElementById('configWeeks').value) || 0; // 0 للمدة المفتوحة
+            
+            team[0].target = parseInt(document.getElementById('mohamedGoal').value) || team[0].target;
+            team[0].dailyTarget = parseInt(document.getElementById('mohamedDaily').value) || team[0].dailyTarget;
+            team[1].target = parseInt(document.getElementById('elbadryGoal').value) || team[1].target;
+            team[1].dailyTarget = parseInt(document.getElementById('elbadryDaily').value) || team[1].dailyTarget;
+            team[2].target = parseInt(document.getElementById('mostafaGoal').value) || team[2].target;
+            team[2].dailyTarget = parseInt(document.getElementById('mostafaDaily').value) || team[2].dailyTarget;
+            
+            // تحديث الإعدادات لفايربيز عشان تتحدث عند الفريق كله
+            database.ref('cp_squad_data/config').set(appConfig);
+            database.ref('cp_squad_data/team').set(team);
+            
+            closeSettings();
+        }
+
+    </script>
+</body>
+</html>
